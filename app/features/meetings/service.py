@@ -30,7 +30,9 @@ def _other_active_schedule_ids(db: Session, exclude_meet_id: int | None = None) 
 
 def _has_overlapping_meet(db: Session, schedule, exclude_meet_id: int | None = None) -> bool:
     other_schedule_ids = _other_active_schedule_ids(db, exclude_meet_id)
-    return schedules_service.any_schedule_overlaps(db, other_schedule_ids, schedule.start_date, schedule.end_date)
+    return schedules_service.any_schedule_overlaps(
+        db, other_schedule_ids, schedule.start_date, schedule.end_date
+    )
 
 
 def create_meet(db: Session, payload: MeetCreate) -> Meet:
@@ -47,7 +49,7 @@ def create_meet(db: Session, payload: MeetCreate) -> Meet:
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise ConflictError(INVALID_REFERENCE_DETAIL)
+        raise ConflictError(INVALID_REFERENCE_DETAIL) from None
     db.refresh(meet)
     return meet
 
@@ -82,7 +84,7 @@ def update_meet(db: Session, meet: Meet, payload: MeetUpdate) -> Meet:
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise ConflictError(INVALID_REFERENCE_DETAIL)
+        raise ConflictError(INVALID_REFERENCE_DETAIL) from None
     db.refresh(meet)
     return meet
 

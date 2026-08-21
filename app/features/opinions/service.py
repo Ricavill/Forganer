@@ -24,7 +24,7 @@ def create_opinion(db: Session, user_id: int, payload: OpinionCreate) -> UserOpi
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise ConflictError(INVALID_ACTIVITY_DETAIL)
+        raise ConflictError(INVALID_ACTIVITY_DETAIL) from None
     db.refresh(opinion)
     return opinion
 
@@ -57,7 +57,7 @@ def update_opinion(db: Session, opinion: UserOpinion, payload: OpinionUpdate) ->
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise ConflictError(INVALID_ACTIVITY_DETAIL)
+        raise ConflictError(INVALID_ACTIVITY_DETAIL) from None
     db.refresh(opinion)
     return opinion
 

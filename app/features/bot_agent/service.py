@@ -81,7 +81,9 @@ def _search_memories(db: Session, user_id: int, embedding: list[float]) -> list[
 
 
 def _add_memory(db: Session, user_id: int, session_id: int, content: str, embedding: list[float]) -> None:
-    db.add(BotAgentMemory(user_id=user_id, bot_agent_session_id=session_id, content=content, embedding=embedding))
+    db.add(
+        BotAgentMemory(user_id=user_id, bot_agent_session_id=session_id, content=content, embedding=embedding)
+    )
 
 
 def _build_system_prompt(summary: str | None, memories: list[BotAgentMemory]) -> str:
@@ -102,7 +104,8 @@ async def chat(db: Session, user_id: int, user_email: str, message: str) -> Chat
     history = await run_in_threadpool(_get_session_messages, db, session.id)
     history = history[-settings.bot_agent_history_limit :]
     chat_messages = [
-        {"role": "user" if m.direction == MessageDirection.IN else "assistant", "content": m.text} for m in history
+        {"role": "user" if m.direction == MessageDirection.IN else "assistant", "content": m.text}
+        for m in history
     ]
 
     query_embedding = await llm.embed_text(message)

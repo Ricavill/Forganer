@@ -28,7 +28,9 @@ def has_overlapping_schedule(
     return result.first() is not None
 
 
-def any_schedule_overlaps(db: Session, schedule_ids: list[int], start_date: datetime, end_date: datetime) -> bool:
+def any_schedule_overlaps(
+    db: Session, schedule_ids: list[int], start_date: datetime, end_date: datetime
+) -> bool:
     """Whether any of the given (non-deleted) schedules overlaps [start_date, end_date)."""
     if not schedule_ids:
         return False

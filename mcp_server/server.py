@@ -1,9 +1,8 @@
 from datetime import datetime
 
-from mcp.server.mcpserver import Context, MCPServer
-
 from api_client import api_client
 from config import settings
+from mcp.server.mcpserver import Context, MCPServer
 
 mcp = MCPServer("friends-activity-planner")
 

@@ -28,6 +28,6 @@ def create_user(db: Session, name: str, last_name: str, email: str, password: st
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise ConflictError("Email already registered")
+        raise ConflictError("Email already registered") from None
     db.refresh(user)
     return user
