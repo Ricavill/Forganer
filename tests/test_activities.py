@@ -49,7 +49,7 @@ def test_get_missing_activity_404(client, auth_headers):
 
 def test_activities_require_auth(client):
     response = client.get("/activities")
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 def test_create_similar_activity_rejected(client, auth_headers):
