@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 
 from app.core.db import get_db
 from app.features.auth.dependencies import get_current_user
@@ -14,6 +14,6 @@ router = APIRouter(prefix="/bot-agent", tags=["bot-agent"])
 async def chat(
     payload: ChatRequest,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
 ):
     return await service.chat(db, current_user, payload.message)

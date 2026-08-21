@@ -1,10 +1,17 @@
+import json
+from typing import Awaitable, Callable
+
 from openai import AsyncOpenAI
 
 from app.core.config import settings
 
 client = AsyncOpenAI(api_key=settings.openai_api_key or "not-set")
 
-SYSTEM_PROMPT = "You are a helpful assistant inside the Friends Activity Planner app."
+SYSTEM_PROMPT = (
+    "You are a helpful assistant inside the Friends Activity Planner app. You can create, "
+    "update, list, and delete activities, schedules, opinions, and meets on the user's behalf "
+    "using the tools available to you."
+)
 
 SUMMARY_PROMPT = (
     "Summarize the conversation below into a short paragraph that preserves the important "
@@ -26,6 +33,43 @@ async def generate_reply(system_prompt: str, messages: list[dict]) -> str:
         messages=[{"role": "system", "content": system_prompt}, *messages],
     )
     return response.choices[0].message.content or ""
+
+
+async def generate_reply_with_tools(
+    system_prompt: str,
+    messages: list[dict],
+    tools: list[dict],
+    call_tool: Callable[[str, dict], Awaitable[str]],
+) -> str:
+    """Chat completion loop that lets the model call MCP-backed tools before
+    producing its final natural-language reply."""
+    conversation = [{"role": "system", "content": system_prompt}, *messages]
+
+    for _ in range(settings.bot_agent_max_tool_rounds):
+        response = await client.chat.completions.create(
+            model=settings.openai_chat_model,
+            messages=conversation,
+            tools=tools or None,
+        )
+        message = response.choices[0].message
+
+        if not message.tool_calls:
+            return message.content or ""
+
+        conversation.append(message.model_dump(exclude_none=True))
+
+        for tool_call in message.tool_calls:
+            arguments = json.loads(tool_call.function.arguments or "{}")
+            try:
+                result = await call_tool(tool_call.function.name, arguments)
+            except Exception as exc:
+                result = f"Error: {exc}"
+
+            conversation.append(
+                {"role": "tool", "tool_call_id": tool_call.id, "content": str(result)}
+            )
+
+    return "I wasn't able to finish that after several tool calls. Could you rephrase or simplify the request?"
 
 
 async def summarize_conversation(transcript: str, previous_summary: str | None) -> str:

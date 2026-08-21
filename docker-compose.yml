@@ -6,10 +6,22 @@ services:
     volumes:
       - ./app:/code/app
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/friends_activity_planner
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/friends_activity_planner
+      MCP_SERVER_URL: http://mcp:8765/mcp
     depends_on:
       db:
         condition: service_healthy
+      mcp:
+        condition: service_started
+
+  mcp:
+    build: ./mcp_server
+    ports:
+      - "8765:8765"
+    environment:
+      API_BASE_URL: http://api:8000
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: 8765
 
   db:
     image: postgres:16-alpine

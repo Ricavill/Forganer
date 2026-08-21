@@ -1,11 +1,12 @@
 fastapi
 uvicorn[standard]
 pydantic-settings
-sqlalchemy[asyncio]
-asyncpg
+sqlalchemy
+psycopg2-binary
 alembic
 bcrypt
 pyjwt
 email-validator
 openai
 pgvector
+mcp

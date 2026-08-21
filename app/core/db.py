@@ -1,13 +1,12 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, func
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import DateTime, create_engine, func
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
 from app.core.config import settings
 
-engine = create_async_engine(settings.database_url)
-async_session = async_sessionmaker(engine, expire_on_commit=False)
+engine = create_engine(settings.database_url)
+SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 
 
 class Base(DeclarativeBase):
@@ -20,6 +19,9 @@ class AuditMixin:
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
-async def get_db():
-    async with async_session() as session:
-        yield session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

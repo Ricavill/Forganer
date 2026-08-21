@@ -1,16 +1,22 @@
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
+from app.core.exceptions import ConflictError
 from app.core.security import hash_password
 from app.features.users.models import User
 
 
-async def get_user_by_email(db: AsyncSession, email: str) -> User | None:
-    result = await db.execute(select(User).where(User.email == email))
+def get_user_by_email(db: Session, email: str) -> User | None:
+    result = db.execute(select(User).where(User.email == email))
     return result.scalar_one_or_none()
 
 
-async def create_user(db: AsyncSession, name: str, last_name: str, email: str, password: str) -> User:
+def create_user(db: Session, name: str, last_name: str, email: str, password: str) -> User:
+    existing = get_user_by_email(db, email)
+    if existing is not None:
+        raise ConflictError("Email already registered")
+
     user = User(
         name=name,
         last_name=last_name,
@@ -18,6 +24,10 @@ async def create_user(db: AsyncSession, name: str, last_name: str, email: str, p
         hashed_password=hash_password(password),
     )
     db.add(user)
-    await db.commit()
-    await db.refresh(user)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise ConflictError("Email already registered")
+    db.refresh(user)
     return user
