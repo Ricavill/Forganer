@@ -8,13 +8,14 @@ Create Date: 2026-08-21
 from alembic import op
 import sqlalchemy as sa
 from pgvector.sqlalchemy import Vector
+from sqlalchemy.dialects import postgresql
 
 revision = "d994b17ffd1d"
 down_revision = "0d8e76216799"
 branch_labels = None
 depends_on = None
 
-message_direction_enum = sa.Enum("in", "out", name="message_direction", create_type=False)
+message_direction_enum = postgresql.ENUM("in", "out", name="message_direction", create_type=False)
 
 AUDIT_COLUMNS = [
     sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),

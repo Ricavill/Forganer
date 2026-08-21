@@ -7,13 +7,14 @@ Create Date: 2026-08-19
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 revision = "9b740d4dcec1"
 down_revision = None
 branch_labels = None
 depends_on = None
 
-sentiment_enum = sa.Enum(
+sentiment_enum = postgresql.ENUM(
     "strongly_like",
     "like",
     "indifferent",
