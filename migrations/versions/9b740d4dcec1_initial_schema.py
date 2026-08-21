@@ -20,6 +20,7 @@ sentiment_enum = sa.Enum(
     "dislike",
     "strongly_dislike",
     name="sentiment",
+    create_type=False,
 )
 
 
