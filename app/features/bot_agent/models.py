@@ -1,16 +1,16 @@
 import enum
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import Enum, ForeignKey, String, Text
+from sqlalchemy import ForeignKey, SmallInteger, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.config import settings
 from app.core.db import AuditMixin, Base
 
 
-class MessageDirection(str, enum.Enum):
-    IN = "in"
-    OUT = "out"
+class MessageDirection(enum.IntEnum):
+    IN = 1
+    OUT = 2
 
 
 class BotAgentSession(Base, AuditMixin):
@@ -30,7 +30,7 @@ class BotAgentMessage(Base, AuditMixin):
     id: Mapped[int] = mapped_column(primary_key=True)
     bot_agent_session_id: Mapped[int] = mapped_column(ForeignKey("bot_agent_sessions.id"))
     text: Mapped[str] = mapped_column(Text)
-    direction: Mapped[MessageDirection] = mapped_column(Enum(MessageDirection, name="message_direction"))
+    direction: Mapped[int] = mapped_column(SmallInteger)
 
     session: Mapped[BotAgentSession] = relationship(back_populates="messages")
 

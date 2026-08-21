@@ -12,6 +12,13 @@ def get_user_by_email(db: Session, email: str) -> User | None:
     return result.scalar_one_or_none()
 
 
+def get_users_by_ids(db: Session, user_ids: list[int]) -> list[User]:
+    if not user_ids:
+        return []
+    result = db.execute(select(User).where(User.id.in_(user_ids)))
+    return list(result.scalars().all())
+
+
 def create_user(db: Session, name: str, last_name: str, email: str, password: str) -> User:
     existing = get_user_by_email(db, email)
     if existing is not None:

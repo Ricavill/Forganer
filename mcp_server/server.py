@@ -249,5 +249,121 @@ async def delete_meet(meet_id: int, ctx: Context) -> str:
     return f"Meet {meet_id} deleted"
 
 
+# ---------------------------------------------------------------------------
+# Users
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+async def find_user_by_email(email: str, ctx: Context) -> dict:
+    """Look up a user by their exact email address. Use this to find a user's id
+    before sending them a friend request."""
+    response = await api_client.request("GET", "/users/lookup", token=_token(ctx), params={"email": email})
+    _raise_for_status(response)
+    return response.json()
+
+
+# ---------------------------------------------------------------------------
+# Friends
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+async def send_friend_request(to_user_id: int, ctx: Context) -> dict:
+    """Send a friend request to another user by their user id."""
+    response = await api_client.request(
+        "POST", "/friends/requests", token=_token(ctx), json={"to_user_id": to_user_id}
+    )
+    _raise_for_status(response)
+    return response.json()
+
+
+@mcp.tool()
+async def list_incoming_friend_requests(ctx: Context) -> list[dict]:
+    """List pending friend requests sent to the current user."""
+    response = await api_client.request("GET", "/friends/requests", token=_token(ctx))
+    _raise_for_status(response)
+    return response.json()
+
+
+@mcp.tool()
+async def accept_friend_request(invitation_id: int, ctx: Context) -> dict:
+    """Accept a pending friend request. The two users become mutual friends."""
+    response = await api_client.request(
+        "POST", f"/friends/requests/{invitation_id}/accept", token=_token(ctx)
+    )
+    _raise_for_status(response)
+    return response.json()
+
+
+@mcp.tool()
+async def reject_friend_request(invitation_id: int, ctx: Context) -> dict:
+    """Reject a pending friend request."""
+    response = await api_client.request(
+        "POST", f"/friends/requests/{invitation_id}/reject", token=_token(ctx)
+    )
+    _raise_for_status(response)
+    return response.json()
+
+
+@mcp.tool()
+async def list_friends(ctx: Context) -> list[dict]:
+    """List the current user's friends."""
+    response = await api_client.request("GET", "/friends", token=_token(ctx))
+    _raise_for_status(response)
+    return response.json()
+
+
+@mcp.tool()
+async def list_friends_interested_in_activity(activity_id: int, ctx: Context) -> list[dict]:
+    """List the current user's friends who have a positive opinion (like or strongly
+    like) about the given activity. Use this before organizing a meetup for an
+    activity, to suggest which friends might want to join."""
+    response = await api_client.request(
+        "GET", "/friends/interested", token=_token(ctx), params={"activity_id": activity_id}
+    )
+    _raise_for_status(response)
+    return response.json()
+
+
+# ---------------------------------------------------------------------------
+# Groups
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+async def create_group(name: str, ctx: Context) -> dict:
+    """Create a new meet group (a named set of people who can attend a meet)."""
+    response = await api_client.request("POST", "/groups", token=_token(ctx), json={"name": name})
+    _raise_for_status(response)
+    return response.json()
+
+
+@mcp.tool()
+async def list_groups(ctx: Context) -> list[dict]:
+    """List all meet groups."""
+    response = await api_client.request("GET", "/groups", token=_token(ctx))
+    _raise_for_status(response)
+    return response.json()
+
+
+@mcp.tool()
+async def add_group_member(group_id: int, user_id: int, ctx: Context) -> dict:
+    """Add a user to a meet group by their user id."""
+    response = await api_client.request(
+        "POST", f"/groups/{group_id}/members", token=_token(ctx), json={"user_id": user_id}
+    )
+    _raise_for_status(response)
+    return response.json()
+
+
+@mcp.tool()
+async def list_group_members(group_id: int, ctx: Context) -> list[dict]:
+    """List the members of a meet group."""
+    response = await api_client.request("GET", f"/groups/{group_id}/members", token=_token(ctx))
+    _raise_for_status(response)
+    return response.json()
+
+
 if __name__ == "__main__":
     mcp.run(transport="streamable-http", host=settings.mcp_host, port=settings.mcp_port)

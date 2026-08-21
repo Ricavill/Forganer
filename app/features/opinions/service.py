@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.exceptions import ConflictError, NotFoundError
-from app.features.opinions.models import UserOpinion
+from app.features.opinions.models import Sentiment, UserOpinion
 from app.features.opinions.schemas import OpinionCreate, OpinionUpdate
 
 INVALID_ACTIVITY_DETAIL = "Invalid activity_id"
@@ -65,3 +65,18 @@ def update_opinion(db: Session, opinion: UserOpinion, payload: OpinionUpdate) ->
 def delete_opinion(db: Session, opinion: UserOpinion) -> None:
     opinion.deleted_at = datetime.now(timezone.utc)
     db.commit()
+
+
+def list_positive_opinions_for_users(db: Session, user_ids: list[int], activity_id: int) -> list[UserOpinion]:
+    """Opinions from the given users about the given activity with sentiment >= LIKE."""
+    if not user_ids:
+        return []
+    result = db.execute(
+        select(UserOpinion).where(
+            UserOpinion.user_id.in_(user_ids),
+            UserOpinion.activity_id == activity_id,
+            UserOpinion.sentiment >= Sentiment.LIKE,
+            UserOpinion.deleted_at.is_(None),
+        )
+    )
+    return list(result.scalars().all())
