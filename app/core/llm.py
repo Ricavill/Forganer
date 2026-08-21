@@ -1,5 +1,5 @@
 import json
-from typing import Awaitable, Callable
+from collections.abc import Awaitable, Callable
 
 from openai import AsyncOpenAI
 
@@ -65,11 +65,11 @@ async def generate_reply_with_tools(
             except Exception as exc:
                 result = f"Error: {exc}"
 
-            conversation.append(
-                {"role": "tool", "tool_call_id": tool_call.id, "content": str(result)}
-            )
+            conversation.append({"role": "tool", "tool_call_id": tool_call.id, "content": str(result)})
 
-    return "I wasn't able to finish that after several tool calls. Could you rephrase or simplify the request?"
+    return (
+        "I wasn't able to finish that after several tool calls. Could you rephrase or simplify the request?"
+    )
 
 
 async def summarize_conversation(transcript: str, previous_summary: str | None) -> str:

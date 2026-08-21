@@ -20,6 +20,10 @@ class Settings(BaseSettings):
     mcp_server_url: str = "http://localhost:8765/mcp"
     bot_agent_max_tool_rounds: int = 4
 
+    activity_similarity_threshold: float = 0.4
+    activity_search_min_similarity: float = 0.15
+    activity_search_limit: int = 20
+
     model_config = {"env_file": ".env"}
 
 

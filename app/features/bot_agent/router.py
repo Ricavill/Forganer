@@ -16,4 +16,4 @@ async def chat(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return await service.chat(db, current_user, payload.message)
+    return await service.chat(db, current_user.id, current_user.email, payload.message)

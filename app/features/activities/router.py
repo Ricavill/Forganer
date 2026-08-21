@@ -19,6 +19,11 @@ def list_activities(db: Session = Depends(get_db)):
     return service.list_activities(db)
 
 
+@router.get("/search", response_model=list[ActivityOut])
+def search_activities(q: str, db: Session = Depends(get_db)):
+    return service.search_activities(db, q)
+
+
 @router.get("/{activity_id}", response_model=ActivityOut)
 def get_activity(activity_id: int, db: Session = Depends(get_db)):
     return service.get_activity(db, activity_id)

@@ -1,17 +1,17 @@
 import enum
 
-from sqlalchemy import Enum, ForeignKey, String
+from sqlalchemy import ForeignKey, SmallInteger, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.db import AuditMixin, Base
 
 
-class Sentiment(str, enum.Enum):
-    STRONGLY_LIKE = "strongly_like"
-    LIKE = "like"
-    INDIFFERENT = "indifferent"
-    DISLIKE = "dislike"
-    STRONGLY_DISLIKE = "strongly_dislike"
+class Sentiment(enum.IntEnum):
+    STRONGLY_DISLIKE = 1
+    DISLIKE = 2
+    INDIFFERENT = 3
+    LIKE = 4
+    STRONGLY_LIKE = 5
 
 
 class UserOpinion(Base, AuditMixin):
@@ -22,4 +22,4 @@ class UserOpinion(Base, AuditMixin):
     name: Mapped[str] = mapped_column(String(150))
     description: Mapped[str | None] = mapped_column(String(1000))
     activity_id: Mapped[int] = mapped_column(ForeignKey("activities.id"))
-    sentiment: Mapped[Sentiment] = mapped_column(Enum(Sentiment, name="sentiment"))
+    sentiment: Mapped[int] = mapped_column(SmallInteger)

@@ -1,9 +1,8 @@
 from datetime import datetime
 
-from mcp.server.mcpserver import Context, MCPServer
-
 from api_client import api_client
 from config import settings
+from mcp.server.mcpserver import Context, MCPServer
 
 mcp = MCPServer("friends-activity-planner")
 
@@ -158,10 +157,10 @@ async def get_opinion(opinion_id: int, ctx: Context) -> dict:
 
 @mcp.tool()
 async def create_opinion(
-    name: str, activity_id: int, sentiment: str, ctx: Context, description: str | None = None
+    name: str, activity_id: int, sentiment: int, ctx: Context, description: str | None = None
 ) -> dict:
-    """Create an opinion about an activity. sentiment must be one of: strongly_like, like,
-    indifferent, dislike, strongly_dislike."""
+    """Create an opinion about an activity. sentiment is 1-5: 1=strongly_dislike, 2=dislike,
+    3=indifferent, 4=like, 5=strongly_like."""
     response = await api_client.request(
         "POST",
         "/opinions",
@@ -178,11 +177,11 @@ async def update_opinion(
     ctx: Context,
     name: str | None = None,
     activity_id: int | None = None,
-    sentiment: str | None = None,
+    sentiment: int | None = None,
     description: str | None = None,
 ) -> dict:
-    """Update an opinion. Only the provided fields are changed. sentiment must be one of:
-    strongly_like, like, indifferent, dislike, strongly_dislike."""
+    """Update an opinion. Only the provided fields are changed. sentiment is 1-5: 1=strongly_dislike,
+    2=dislike, 3=indifferent, 4=like, 5=strongly_like."""
     payload = _without_none(name=name, activity_id=activity_id, sentiment=sentiment, description=description)
     response = await api_client.request("PATCH", f"/opinions/{opinion_id}", token=_token(ctx), json=payload)
     _raise_for_status(response)
