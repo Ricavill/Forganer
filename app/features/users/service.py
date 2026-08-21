@@ -1,0 +1,33 @@
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from app.core.exceptions import ConflictError
+from app.core.security import hash_password
+from app.features.users.models import User
+
+
+def get_user_by_email(db: Session, email: str) -> User | None:
+    result = db.execute(select(User).where(User.email == email))
+    return result.scalar_one_or_none()
+
+
+def create_user(db: Session, name: str, last_name: str, email: str, password: str) -> User:
+    existing = get_user_by_email(db, email)
+    if existing is not None:
+        raise ConflictError("Email already registered")
+
+    user = User(
+        name=name,
+        last_name=last_name,
+        email=email,
+        hashed_password=hash_password(password),
+    )
+    db.add(user)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise ConflictError("Email already registered")
+    db.refresh(user)
+    return user

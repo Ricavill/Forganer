@@ -1,0 +1,43 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/code/app
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/friends_activity_planner
+      MCP_SERVER_URL: http://mcp:8765/mcp
+    depends_on:
+      db:
+        condition: service_healthy
+      mcp:
+        condition: service_started
+
+  mcp:
+    build: ./mcp_server
+    ports:
+      - "8765:8765"
+    environment:
+      API_BASE_URL: http://api:8000
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: 8765
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: friends_activity_planner
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
