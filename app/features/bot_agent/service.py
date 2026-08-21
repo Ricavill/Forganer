@@ -9,7 +9,6 @@ from app.core.config import settings
 from app.core.security import create_access_token
 from app.features.bot_agent.models import BotAgentMemory, BotAgentMessage, BotAgentSession, MessageDirection
 from app.features.bot_agent.schemas import ChatResponse
-from app.features.users.models import User
 
 
 def _is_today(dt: datetime) -> bool:
@@ -30,25 +29,25 @@ def _format_transcript(messages: list[BotAgentMessage]) -> str:
     return "\n".join(lines)
 
 
-def _get_latest_session(db: Session, user: User) -> BotAgentSession | None:
+def _get_latest_session(db: Session, user_id: int) -> BotAgentSession | None:
     result = db.execute(
         select(BotAgentSession)
-        .where(BotAgentSession.user_id == user.id)
+        .where(BotAgentSession.user_id == user_id)
         .order_by(BotAgentSession.created_at.desc())
         .limit(1)
     )
     return result.scalar_one_or_none()
 
 
-def _create_session(db: Session, user: User, summary: str | None) -> BotAgentSession:
-    session = BotAgentSession(user_id=user.id, title="Chat", summary=summary)
+def _create_session(db: Session, user_id: int, summary: str | None) -> BotAgentSession:
+    session = BotAgentSession(user_id=user_id, title="Chat", summary=summary)
     db.add(session)
     db.flush()
     return session
 
 
-async def _get_active_session(db: Session, user: User) -> BotAgentSession:
-    latest = await run_in_threadpool(_get_latest_session, db, user)
+async def _get_active_session(db: Session, user_id: int) -> BotAgentSession:
+    latest = await run_in_threadpool(_get_latest_session, db, user_id)
 
     if latest is not None and _is_today(latest.created_at):
         return latest
@@ -61,7 +60,7 @@ async def _get_active_session(db: Session, user: User) -> BotAgentSession:
         else:
             new_summary = latest.summary
 
-    return await run_in_threadpool(_create_session, db, user, new_summary)
+    return await run_in_threadpool(_create_session, db, user_id, new_summary)
 
 
 def _add_message(db: Session, session_id: int, text: str, direction: MessageDirection) -> BotAgentMessage:
@@ -95,8 +94,8 @@ def _build_system_prompt(summary: str | None, memories: list[BotAgentMemory]) ->
     return "\n\n".join(parts)
 
 
-async def chat(db: Session, user: User, message: str) -> ChatResponse:
-    session = await _get_active_session(db, user)
+async def chat(db: Session, user_id: int, user_email: str, message: str) -> ChatResponse:
+    session = await _get_active_session(db, user_id)
 
     await run_in_threadpool(_add_message, db, session.id, message, MessageDirection.IN)
 
@@ -107,11 +106,11 @@ async def chat(db: Session, user: User, message: str) -> ChatResponse:
     ]
 
     query_embedding = await llm.embed_text(message)
-    memories = await run_in_threadpool(_search_memories, db, user.id, query_embedding)
+    memories = await run_in_threadpool(_search_memories, db, user_id, query_embedding)
 
     system_prompt = _build_system_prompt(session.summary, memories)
 
-    agent_token = create_access_token(user.email)
+    agent_token = create_access_token(user_email)
     tools = await mcp_client.list_openai_tools(agent_token)
 
     async def call_tool(name: str, arguments: dict) -> str:
@@ -124,7 +123,7 @@ async def chat(db: Session, user: User, message: str) -> ChatResponse:
     memory_fact = await llm.extract_memory(message, reply)
     if memory_fact:
         memory_embedding = await llm.embed_text(memory_fact)
-        await run_in_threadpool(_add_memory, db, user.id, session.id, memory_fact, memory_embedding)
+        await run_in_threadpool(_add_memory, db, user_id, session.id, memory_fact, memory_embedding)
 
     await run_in_threadpool(db.commit)
     return ChatResponse(session_id=session.id, reply=reply)
