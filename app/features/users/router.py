@@ -7,6 +7,7 @@ from app.core.security import create_access_token
 from app.features.auth.dependencies import get_current_user
 from app.features.auth.schemas import Token
 from app.features.users import service
+from app.features.users.models import User
 from app.features.users.schemas import UserOut, UserSignUp
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -24,3 +25,12 @@ def lookup_user_by_email(email: str, db: Session = Depends(get_db)):
     if user is None:
         raise NotFoundError("No user found with that email")
     return user
+
+
+@router.get("/search", response_model=list[UserOut])
+def search_users(
+    q: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return service.search_users(db, q, exclude_user_id=current_user.id)

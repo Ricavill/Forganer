@@ -263,6 +263,16 @@ async def find_user_by_email(email: str, ctx: Context) -> dict:
     return response.json()
 
 
+@mcp.tool()
+async def search_users_by_name(query: str, ctx: Context) -> list[dict]:
+    """Search for users whose first or last name contains the given text (case-insensitive).
+    Use this to find a friend's user id when you only know their name, not their email.
+    May return multiple matches if several users share a similar name."""
+    response = await api_client.request("GET", "/users/search", token=_token(ctx), params={"q": query})
+    _raise_for_status(response)
+    return response.json()
+
+
 # ---------------------------------------------------------------------------
 # Friends
 # ---------------------------------------------------------------------------

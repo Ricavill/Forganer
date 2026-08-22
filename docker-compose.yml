@@ -5,6 +5,8 @@ services:
       - "8000:8000"
     volumes:
       - ./app:/code/app
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/friends_activity_planner
       MCP_SERVER_URL: http://mcp:8765/mcp

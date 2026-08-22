@@ -11,6 +11,7 @@ from app.core.db import AuditMixin, Base
 class MessageDirection(enum.IntEnum):
     IN = 1
     OUT = 2
+    TOOL_LOG = 3
 
 
 class BotAgentSession(Base, AuditMixin):

@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -16,6 +16,21 @@ def get_users_by_ids(db: Session, user_ids: list[int]) -> list[User]:
     if not user_ids:
         return []
     result = db.execute(select(User).where(User.id.in_(user_ids)))
+    return list(result.scalars().all())
+
+
+def search_users(db: Session, query: str, exclude_user_id: int, limit: int = 20) -> list[User]:
+    """Find users whose first or last name contains `query` (case-insensitive)."""
+    pattern = f"%{query}%"
+    stmt = (
+        select(User)
+        .where(
+            User.id != exclude_user_id,
+            or_(User.name.ilike(pattern), User.last_name.ilike(pattern)),
+        )
+        .limit(limit)
+    )
+    result = db.execute(stmt)
     return list(result.scalars().all())
 
 
