@@ -21,3 +21,7 @@ class MeetOut(BaseModel):
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class MeetInviteResult(BaseModel):
+    sent_to: list[str]

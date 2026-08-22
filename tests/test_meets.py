@@ -1,4 +1,7 @@
-from app.features.groups.models import MeetGroup
+from unittest.mock import MagicMock, patch
+
+from app.core import email
+from app.features.groups.models import MeetGroup, MeetGroupUser
 
 
 def _create_group(db_session, name="Weekend Crew") -> int:
@@ -64,4 +67,43 @@ def test_delete_meet_then_404(client, auth_headers, db_session):
     assert response.status_code == 204
 
     response = client.get(f"/meets/{meet_id}", headers=headers)
+    assert response.status_code == 404
+
+
+def test_send_invites_emails_all_group_members(client, auth_headers, db_session):
+    headers = auth_headers("meet5@test.com")
+    other_headers = auth_headers("meet5b@test.com")
+    schedule_id = _create_schedule(client, headers, "2026-09-13T10:00:00Z", "2026-09-13T12:00:00Z")
+    group_id = _create_group(db_session, "GroupD")
+
+    organizer_id = client.get("/users/lookup", params={"email": "meet5@test.com"}, headers=headers).json()[
+        "id"
+    ]
+    other_id = client.get("/users/lookup", params={"email": "meet5b@test.com"}, headers=other_headers).json()[
+        "id"
+    ]
+    db_session.add(MeetGroupUser(user_id=organizer_id, meet_group_id=group_id))
+    db_session.add(MeetGroupUser(user_id=other_id, meet_group_id=group_id))
+    db_session.commit()
+
+    meet_id = client.post(
+        "/meets", json={"schedule_id": schedule_id, "meet_group_id": group_id}, headers=headers
+    ).json()["id"]
+
+    with patch.object(email, "send_email", MagicMock()) as mocked_send:
+        response = client.post(f"/meets/{meet_id}/invite", headers=headers)
+
+    assert response.status_code == 200
+    sent_to = set(response.json()["sent_to"])
+    assert sent_to == {"meet5@test.com", "meet5b@test.com"}
+
+    mocked_send.assert_called_once()
+    kwargs = mocked_send.call_args.kwargs
+    assert set(kwargs["to"]) == sent_to
+    assert kwargs["attachments"][0]["filename"] == "invite.ics"
+
+
+def test_send_invites_missing_meet_404(client, auth_headers):
+    headers = auth_headers("meet6@test.com")
+    response = client.post("/meets/999999/invite", headers=headers)
     assert response.status_code == 404

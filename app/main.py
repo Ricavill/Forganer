@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app.core.config import settings
-from app.core.exceptions import ConflictError, NotFoundError, ValidationError
+from app.core.exceptions import ConflictError, ExternalServiceError, NotFoundError, ValidationError
 from app.features.activities import router as activities
 from app.features.auth import router as auth
 from app.features.bot_agent import router as bot_agent
@@ -30,6 +30,11 @@ async def conflict_handler(request: Request, exc: ConflictError) -> JSONResponse
 @app.exception_handler(ValidationError)
 async def validation_handler(request: Request, exc: ValidationError) -> JSONResponse:
     return JSONResponse(status_code=422, content={"detail": exc.detail})
+
+
+@app.exception_handler(ExternalServiceError)
+async def external_service_handler(request: Request, exc: ExternalServiceError) -> JSONResponse:
+    return JSONResponse(status_code=502, content={"detail": exc.detail})
 
 
 app.include_router(health.router)

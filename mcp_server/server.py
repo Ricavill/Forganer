@@ -249,6 +249,17 @@ async def delete_meet(meet_id: int, ctx: Context) -> str:
     return f"Meet {meet_id} deleted"
 
 
+@mcp.tool()
+async def send_meet_invites(meet_id: int, ctx: Context) -> dict:
+    """Email every member of the meet's group a calendar invite (.ics attachment)
+    for its schedule - works with iPhone/Apple Mail, Google Calendar, Outlook, etc.
+    Only call this after the user has explicitly confirmed they want invites sent -
+    never send invites without that confirmation."""
+    response = await api_client.request("POST", f"/meets/{meet_id}/invite", token=_token(ctx))
+    _raise_for_status(response)
+    return response.json()
+
+
 # ---------------------------------------------------------------------------
 # Users
 # ---------------------------------------------------------------------------

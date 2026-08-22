@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     activity_search_min_similarity: float = 0.15
     activity_search_limit: int = 20
 
+    resend_api_key: str = ""
+    resend_from_email: str = "Friends Activity Planner <onboarding@resend.dev>"
+
     model_config = {"env_file": ".env"}
 
 

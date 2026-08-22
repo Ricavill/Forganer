@@ -1,13 +1,17 @@
+import base64
 from datetime import datetime, timezone
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.core import calendar, email
 from app.core.exceptions import ConflictError, NotFoundError
+from app.features.groups import service as groups_service
 from app.features.meetings.models import Meet
 from app.features.meetings.schemas import MeetCreate, MeetUpdate
 from app.features.schedules import service as schedules_service
+from app.features.users.service import get_users_by_ids
 
 INVALID_REFERENCE_DETAIL = "Invalid schedule_id or meet_group_id"
 OVERLAP_DETAIL = "Another meeting already exists for that schedule's time range"
@@ -92,3 +96,43 @@ def update_meet(db: Session, meet: Meet, payload: MeetUpdate) -> Meet:
 def delete_meet(db: Session, meet: Meet) -> None:
     meet.deleted_at = datetime.now(timezone.utc)
     db.commit()
+
+
+def send_invites(db: Session, meet_id: int, organizer_email: str) -> list[str]:
+    """Email every member of the meet's group a calendar invite (.ics) for its
+    schedule. Returns the list of email addresses invited."""
+    meet = get_meet(db, meet_id)
+    schedule = schedules_service.get_schedule(db, meet.schedule_id)
+    group = groups_service.get_group(db, meet.meet_group_id)
+    members = groups_service.list_members(db, meet.meet_group_id)
+    attendees = get_users_by_ids(db, [m.user_id for m in members])
+    attendee_emails = [u.email for u in attendees]
+
+    if not attendee_emails:
+        return []
+
+    ics = calendar.build_ics_invite(
+        uid=f"meet-{meet.id}@friends-activity-planner",
+        summary=group.name,
+        description=f"Meetup organized via Friends Activity Planner: {group.name}",
+        start=schedule.start_date,
+        end=schedule.end_date,
+        organizer_email=organizer_email,
+        attendee_emails=attendee_emails,
+    )
+
+    email.send_email(
+        to=attendee_emails,
+        subject=f"You're invited: {group.name}",
+        html=(
+            f"<p>You've been invited to <strong>{group.name}</strong>.</p>"
+            f"<p>{schedule.start_date.isoformat()} - {schedule.end_date.isoformat()}</p>"
+        ),
+        attachments=[
+            {
+                "filename": "invite.ics",
+                "content": base64.b64encode(ics.encode()).decode(),
+            }
+        ],
+    )
+    return attendee_emails
