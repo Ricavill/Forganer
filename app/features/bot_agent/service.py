@@ -25,8 +25,20 @@ def _get_session_messages(db: Session, session_id: int) -> list[BotAgentMessage]
 
 
 def _format_transcript(messages: list[BotAgentMessage]) -> str:
-    lines = [f"{'User' if m.direction == MessageDirection.IN else 'Assistant'}: {m.text}" for m in messages]
+    lines = [
+        f"{'User' if m.direction == MessageDirection.IN else 'Assistant'}: {m.text}"
+        for m in messages
+        if m.direction != MessageDirection.TOOL_LOG
+    ]
     return "\n".join(lines)
+
+
+def _message_to_chat_dict(m: BotAgentMessage) -> dict:
+    if m.direction == MessageDirection.IN:
+        return {"role": "user", "content": m.text}
+    if m.direction == MessageDirection.TOOL_LOG:
+        return {"role": "assistant", "content": f"[Tool result noted earlier in this conversation] {m.text}"}
+    return {"role": "assistant", "content": m.text}
 
 
 def _get_latest_session(db: Session, user_id: int) -> BotAgentSession | None:
@@ -88,6 +100,8 @@ def _add_memory(db: Session, user_id: int, session_id: int, content: str, embedd
 
 def _build_system_prompt(summary: str | None, memories: list[BotAgentMemory]) -> str:
     parts = [llm.SYSTEM_PROMPT]
+    if settings.resend_api_key:
+        parts.append(llm.EMAIL_INVITE_PROMPT)
     if summary:
         parts.append(f"Summary of earlier conversations with this user:\n{summary}")
     if memories:
@@ -103,10 +117,7 @@ async def chat(db: Session, user_id: int, user_email: str, message: str) -> Chat
 
     history = await run_in_threadpool(_get_session_messages, db, session.id)
     history = history[-settings.bot_agent_history_limit :]
-    chat_messages = [
-        {"role": "user" if m.direction == MessageDirection.IN else "assistant", "content": m.text}
-        for m in history
-    ]
+    chat_messages = [_message_to_chat_dict(m) for m in history]
 
     query_embedding = await llm.embed_text(message)
     memories = await run_in_threadpool(_search_memories, db, user_id, query_embedding)
@@ -119,7 +130,10 @@ async def chat(db: Session, user_id: int, user_email: str, message: str) -> Chat
     async def call_tool(name: str, arguments: dict) -> str:
         return await mcp_client.call_tool(agent_token, name, arguments)
 
-    reply = await llm.generate_reply_with_tools(system_prompt, chat_messages, tools, call_tool)
+    reply, tool_log = await llm.generate_reply_with_tools(system_prompt, chat_messages, tools, call_tool)
+
+    for entry in tool_log:
+        await run_in_threadpool(_add_message, db, session.id, entry, MessageDirection.TOOL_LOG)
 
     await run_in_threadpool(_add_message, db, session.id, reply, MessageDirection.OUT)
 

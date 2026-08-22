@@ -18,11 +18,14 @@ class Settings(BaseSettings):
     bot_agent_memory_top_k: int = 5
 
     mcp_server_url: str = "http://localhost:8765/mcp"
-    bot_agent_max_tool_rounds: int = 4
+    bot_agent_max_tool_rounds: int = 6
 
     activity_similarity_threshold: float = 0.4
     activity_search_min_similarity: float = 0.15
     activity_search_limit: int = 20
+
+    resend_api_key: str = ""
+    resend_from_email: str = "Friends Activity Planner <onboarding@resend.dev>"
 
     model_config = {"env_file": ".env"}
 

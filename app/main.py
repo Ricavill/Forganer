@@ -2,10 +2,12 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app.core.config import settings
-from app.core.exceptions import ConflictError, NotFoundError, ValidationError
+from app.core.exceptions import ConflictError, ExternalServiceError, NotFoundError, ValidationError
 from app.features.activities import router as activities
 from app.features.auth import router as auth
 from app.features.bot_agent import router as bot_agent
+from app.features.friends import router as friends
+from app.features.groups import router as groups
 from app.features.health import router as health
 from app.features.meetings import router as meetings
 from app.features.opinions import router as opinions
@@ -30,6 +32,11 @@ async def validation_handler(request: Request, exc: ValidationError) -> JSONResp
     return JSONResponse(status_code=422, content={"detail": exc.detail})
 
 
+@app.exception_handler(ExternalServiceError)
+async def external_service_handler(request: Request, exc: ExternalServiceError) -> JSONResponse:
+    return JSONResponse(status_code=502, content={"detail": exc.detail})
+
+
 app.include_router(health.router)
 app.include_router(auth.router)
 app.include_router(users.router)
@@ -38,3 +45,5 @@ app.include_router(activities.router)
 app.include_router(schedules.router)
 app.include_router(opinions.router)
 app.include_router(meetings.router)
+app.include_router(friends.router)
+app.include_router(groups.router)
