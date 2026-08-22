@@ -107,3 +107,23 @@ def test_send_invites_missing_meet_404(client, auth_headers):
     headers = auth_headers("meet6@test.com")
     response = client.post("/meets/999999/invite", headers=headers)
     assert response.status_code == 404
+
+
+def test_send_invites_without_resend_configured_returns_502(client, auth_headers, db_session):
+    """Without a real RESEND_API_KEY (the default in tests/CI), sending should fail
+    clearly rather than attempt a doomed call to Resend's API."""
+    headers = auth_headers("meet7@test.com")
+    schedule_id = _create_schedule(client, headers, "2026-09-14T10:00:00Z", "2026-09-14T12:00:00Z")
+    group_id = _create_group(db_session, "GroupE")
+    organizer_id = client.get("/users/lookup", params={"email": "meet7@test.com"}, headers=headers).json()[
+        "id"
+    ]
+    db_session.add(MeetGroupUser(user_id=organizer_id, meet_group_id=group_id))
+    db_session.commit()
+
+    meet_id = client.post(
+        "/meets", json={"schedule_id": schedule_id, "meet_group_id": group_id}, headers=headers
+    ).json()["id"]
+
+    response = client.post(f"/meets/{meet_id}/invite", headers=headers)
+    assert response.status_code == 502

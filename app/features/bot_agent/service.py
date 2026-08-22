@@ -100,6 +100,8 @@ def _add_memory(db: Session, user_id: int, session_id: int, content: str, embedd
 
 def _build_system_prompt(summary: str | None, memories: list[BotAgentMemory]) -> str:
     parts = [llm.SYSTEM_PROMPT]
+    if settings.resend_api_key:
+        parts.append(llm.EMAIL_INVITE_PROMPT)
     if summary:
         parts.append(f"Summary of earlier conversations with this user:\n{summary}")
     if memories:

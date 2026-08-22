@@ -2,8 +2,17 @@ from contextlib import ExitStack
 from unittest.mock import AsyncMock, patch
 
 from app.core import llm, mcp_client
+from app.core.config import settings
 from app.features.bot_agent import service
 from app.features.users.service import get_user_by_email
+
+
+def test_email_invite_prompt_only_included_when_resend_configured():
+    with patch.object(settings, "resend_api_key", ""):
+        assert llm.EMAIL_INVITE_PROMPT not in service._build_system_prompt(None, [])
+
+    with patch.object(settings, "resend_api_key", "re_test_key"):
+        assert llm.EMAIL_INVITE_PROMPT in service._build_system_prompt(None, [])
 
 
 def _stub_dependencies(stack: ExitStack) -> None:
