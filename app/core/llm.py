@@ -23,7 +23,21 @@ SYSTEM_PROMPT = (
     "friend request, adding a group member), only use an id you actually obtained from a tool "
     "result - either in this turn or noted from an earlier one in this conversation. Never guess "
     "or infer an id from memory of a name alone. If you are not sure you have the right id, call "
-    "the appropriate lookup tool again before acting."
+    "the appropriate lookup tool again before acting.\n\n"
+    "State such as friend requests, friendships, opinions, and memberships can change between "
+    "turns - a request can be accepted, rejected, or cancelled by either side at any time, "
+    'possibly outside this conversation. Never answer a question about current state ("do I have '
+    'a pending request?", "have I already sent one?", "are we friends?") from memory of earlier '
+    "in the conversation or from a tool result noted previously. Always call the relevant listing "
+    "or lookup tool again to get the current state before answering or acting on it, even if you "
+    "believe you already know the answer. The one exception is a fixed, immutable fact obtained "
+    "this same turn, such as a person's id from a lookup you just made - that does not need "
+    "re-verifying within the same turn.\n\n"
+    "Never claim you performed an action - sent a request, created something, added a member, "
+    "and so on - unless a tool call in this same turn actually returned a successful result for "
+    "that exact action. If a tool call fails or returns an error, tell the user what actually "
+    "happened (including the error) instead of reporting success. If you have not called the "
+    "tool for an action yet, call it before describing the action as done."
 )
 
 SUMMARY_PROMPT = (
@@ -72,6 +86,7 @@ async def generate_reply_with_tools(
             model=settings.openai_chat_model,
             messages=conversation,
             tools=tools or None,
+            temperature=0,
         )
         message = response.choices[0].message
 

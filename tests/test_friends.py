@@ -23,6 +23,57 @@ def test_send_and_accept_friend_request_creates_mutual_friendship(client, auth_h
     assert len(client.get("/friends", headers=headers_b).json()) == 1
 
 
+def test_list_sent_requests(client, auth_headers):
+    headers_a = auth_headers("friend11a@test.com")
+    headers_b = auth_headers("friend11b@test.com")
+    bob_id = _lookup_id(client, headers_a, "friend11b@test.com")
+
+    assert client.get("/friends/requests/sent", headers=headers_a).json() == []
+
+    invitation_id = client.post("/friends/requests", json={"to_user_id": bob_id}, headers=headers_a).json()[
+        "id"
+    ]
+
+    sent = client.get("/friends/requests/sent", headers=headers_a).json()
+    assert [r["id"] for r in sent] == [invitation_id]
+
+    # not visible in the recipient's own "sent" list
+    assert client.get("/friends/requests/sent", headers=headers_b).json() == []
+
+
+def test_cancel_pending_request_soft_deletes_it(client, auth_headers):
+    headers_a = auth_headers("friend9a@test.com")
+    headers_b = auth_headers("friend9b@test.com")
+    bob_id = _lookup_id(client, headers_a, "friend9b@test.com")
+
+    invitation_id = client.post("/friends/requests", json={"to_user_id": bob_id}, headers=headers_a).json()[
+        "id"
+    ]
+
+    response = client.delete(f"/friends/requests/{invitation_id}", headers=headers_a)
+    assert response.status_code == 204
+
+    # no longer visible to the recipient
+    assert client.get("/friends/requests", headers=headers_b).json() == []
+
+    # sender can send a fresh request afterwards (cancelled one doesn't block it)
+    response = client.post("/friends/requests", json={"to_user_id": bob_id}, headers=headers_a)
+    assert response.status_code == 201
+
+
+def test_cancel_request_by_non_sender_rejected(client, auth_headers):
+    headers_a = auth_headers("friend10a@test.com")
+    headers_b = auth_headers("friend10b@test.com")
+    bob_id = _lookup_id(client, headers_a, "friend10b@test.com")
+
+    invitation_id = client.post("/friends/requests", json={"to_user_id": bob_id}, headers=headers_a).json()[
+        "id"
+    ]
+
+    response = client.delete(f"/friends/requests/{invitation_id}", headers=headers_b)
+    assert response.status_code == 404
+
+
 def test_reject_friend_request(client, auth_headers):
     headers_a = auth_headers("friend2a@test.com")
     headers_b = auth_headers("friend2b@test.com")

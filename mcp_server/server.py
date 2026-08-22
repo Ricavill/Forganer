@@ -297,6 +297,25 @@ async def list_incoming_friend_requests(ctx: Context) -> list[dict]:
 
 
 @mcp.tool()
+async def list_sent_friend_requests(ctx: Context) -> list[dict]:
+    """List pending friend requests the current user has sent that are still awaiting a
+    response. Use this to check whether you've already sent someone a request before
+    sending another, or before answering questions like "have I already sent this person
+    a request?"."""
+    response = await api_client.request("GET", "/friends/requests/sent", token=_token(ctx))
+    _raise_for_status(response)
+    return response.json()
+
+
+@mcp.tool()
+async def cancel_friend_request(invitation_id: int, ctx: Context) -> str:
+    """Withdraw a friend request the current user sent, as long as it's still pending."""
+    response = await api_client.request("DELETE", f"/friends/requests/{invitation_id}", token=_token(ctx))
+    _raise_for_status(response)
+    return f"Friend request {invitation_id} cancelled"
+
+
+@mcp.tool()
 async def accept_friend_request(invitation_id: int, ctx: Context) -> dict:
     """Accept a pending friend request. The two users become mutual friends."""
     response = await api_client.request(

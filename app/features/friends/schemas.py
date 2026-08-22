@@ -9,21 +9,21 @@ class FriendRequestCreate(BaseModel):
     to_user_id: int
 
 
-class FriendInvitationOut(BaseModel):
-    id: int
-    from_user_id: int
-    to_user_id: int
-    status: InvitationStatus
-    created_at: datetime
-
-    model_config = {"from_attributes": True}
-
-
 class FriendOut(BaseModel):
     id: int
     name: str
     last_name: str
     email: str
+
+    model_config = {"from_attributes": True}
+
+
+class FriendInvitationOut(BaseModel):
+    id: int
+    from_user: FriendOut
+    to_user: FriendOut
+    status: InvitationStatus
+    created_at: datetime
 
     model_config = {"from_attributes": True}
 

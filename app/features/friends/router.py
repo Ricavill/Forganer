@@ -29,6 +29,20 @@ def list_incoming_requests(current_user: User = Depends(get_current_user), db: S
     return service.list_incoming_requests(db, current_user.id)
 
 
+@router.get("/requests/sent", response_model=list[FriendInvitationOut])
+def list_sent_requests(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return service.list_sent_requests(db, current_user.id)
+
+
+@router.delete("/requests/{invitation_id}", status_code=status.HTTP_204_NO_CONTENT)
+def cancel_request(
+    invitation_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    service.cancel_request(db, invitation_id, current_user.id)
+
+
 @router.post("/requests/{invitation_id}/accept", response_model=FriendInvitationOut)
 def accept_request(
     invitation_id: int,
