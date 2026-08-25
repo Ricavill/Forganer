@@ -11,7 +11,11 @@ router = APIRouter(prefix="/groups", tags=["groups"], dependencies=[Depends(get_
 
 
 @router.post("", response_model=MeetGroupOut, status_code=status.HTTP_201_CREATED)
-def create_group(payload: MeetGroupCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def create_group(
+    payload: MeetGroupCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     return service.create_group(db, payload, current_user.id)
 
 

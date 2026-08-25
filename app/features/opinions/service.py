@@ -9,7 +9,9 @@ from app.features.opinions.models import Sentiment, UserOpinion
 from app.features.opinions.schemas import OpinionCreate, OpinionUpdate
 
 INVALID_ACTIVITY_DETAIL = "Invalid activity_id"
-DUPLICATE_OPINION_DETAIL = "You already have an opinion on this activity. Update it instead of adding a new one."
+DUPLICATE_OPINION_DETAIL = (
+    "You already have an opinion on this activity. Update it instead of adding a new one."
+)
 
 
 def create_opinion(db: Session, user_id: int, payload: OpinionCreate) -> UserOpinion:
