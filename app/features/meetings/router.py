@@ -16,8 +16,8 @@ def create_meet(payload: MeetCreate, db: Session = Depends(get_db)):
 
 
 @router.get("", response_model=list[MeetOut])
-def list_meets(db: Session = Depends(get_db)):
-    return service.list_meets(db)
+def list_meets(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return service.list_meets(db, current_user.id)
 
 
 @router.get("/{meet_id}", response_model=MeetOut)

@@ -9,9 +9,22 @@ from app.features.opinions.models import Sentiment, UserOpinion
 from app.features.opinions.schemas import OpinionCreate, OpinionUpdate
 
 INVALID_ACTIVITY_DETAIL = "Invalid activity_id"
+DUPLICATE_OPINION_DETAIL = (
+    "You already have an opinion on this activity. Update it instead of adding a new one."
+)
 
 
 def create_opinion(db: Session, user_id: int, payload: OpinionCreate) -> UserOpinion:
+    existing = db.execute(
+        select(UserOpinion).where(
+            UserOpinion.user_id == user_id,
+            UserOpinion.activity_id == payload.activity_id,
+            UserOpinion.deleted_at.is_(None),
+        )
+    ).scalar_one_or_none()
+    if existing is not None:
+        raise ConflictError(DUPLICATE_OPINION_DETAIL)
+
     opinion = UserOpinion(
         user_id=user_id,
         name=payload.name,
@@ -76,6 +89,20 @@ def list_positive_opinions_for_users(db: Session, user_ids: list[int], activity_
             UserOpinion.user_id.in_(user_ids),
             UserOpinion.activity_id == activity_id,
             UserOpinion.sentiment >= Sentiment.LIKE,
+            UserOpinion.deleted_at.is_(None),
+        )
+    )
+    return list(result.scalars().all())
+
+
+def list_opinions_for_users(db: Session, user_ids: list[int], activity_id: int) -> list[UserOpinion]:
+    """All opinions (any sentiment) from the given users about the given activity."""
+    if not user_ids:
+        return []
+    result = db.execute(
+        select(UserOpinion).where(
+            UserOpinion.user_id.in_(user_ids),
+            UserOpinion.activity_id == activity_id,
             UserOpinion.deleted_at.is_(None),
         )
     )

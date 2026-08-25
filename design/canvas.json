@@ -1,0 +1,9 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 390, "h": 844, "title": "Friends Planner" }
+  ],
+  "annotations": [
+    { "id": "note-main", "x": 0, "y": -130, "w": 390, "text": "Friends Planner — clickable prototype\nWarm Editorial: cream + terracotta, serif headlines. Tap the bottom tabs to move between Assistant, Calendar, New meetup, Friends and You. Try toggling a friend in New meetup, accepting the request in Friends, or creating the meetup." }
+  ],
+  "launch": { "view": "canvas" }
+}

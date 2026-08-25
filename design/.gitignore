@@ -1,0 +1,5 @@
+# Seeded Design Components payloads (regenerable via seed-canvas.mjs, ~2MB each,
+# embed the full editor) — keep only the design source files (.dc.html, canvas.json)
+# and the plain standalone prototype in version control.
+friends-planner.html
+friends-planner-directions.html

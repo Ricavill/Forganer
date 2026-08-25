@@ -20,13 +20,13 @@ def get_users_by_ids(db: Session, user_ids: list[int]) -> list[User]:
 
 
 def search_users(db: Session, query: str, exclude_user_id: int, limit: int = 20) -> list[User]:
-    """Find users whose first or last name contains `query` (case-insensitive)."""
+    """Find users whose first name, last name, or email contains `query` (case-insensitive)."""
     pattern = f"%{query}%"
     stmt = (
         select(User)
         .where(
             User.id != exclude_user_id,
-            or_(User.name.ilike(pattern), User.last_name.ilike(pattern)),
+            or_(User.name.ilike(pattern), User.last_name.ilike(pattern), User.email.ilike(pattern)),
         )
         .limit(limit)
     )
