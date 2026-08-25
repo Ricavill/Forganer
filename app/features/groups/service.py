@@ -32,9 +32,7 @@ def list_groups_for_user(db: Session, user_id: int) -> list[MeetGroup]:
     group_ids = list_group_ids_for_user(db, user_id)
     if not group_ids:
         return []
-    result = db.execute(
-        select(MeetGroup).where(MeetGroup.deleted_at.is_(None), MeetGroup.id.in_(group_ids))
-    )
+    result = db.execute(select(MeetGroup).where(MeetGroup.deleted_at.is_(None), MeetGroup.id.in_(group_ids)))
     return list(result.scalars().all())
 
 
