@@ -110,6 +110,21 @@ def _build_system_prompt(summary: str | None, memories: list[BotAgentMemory]) ->
     return "\n\n".join(parts)
 
 
+def _get_todays_session(db: Session, user_id: int) -> BotAgentSession | None:
+    latest = _get_latest_session(db, user_id)
+    if latest is not None and _is_today(latest.created_at):
+        return latest
+    return None
+
+
+async def get_todays_messages(db: Session, user_id: int) -> list[BotAgentMessage]:
+    session = await run_in_threadpool(_get_todays_session, db, user_id)
+    if session is None:
+        return []
+    messages = await run_in_threadpool(_get_session_messages, db, session.id)
+    return [m for m in messages if m.direction != MessageDirection.TOOL_LOG]
+
+
 async def chat(db: Session, user_id: int, user_email: str, message: str) -> ChatResponse:
     session = await _get_active_session(db, user_id)
 

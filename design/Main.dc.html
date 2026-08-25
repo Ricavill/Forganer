@@ -1,0 +1,371 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #b5502e; }
+    a:hover { color: #8f3d22; }
+  </style>
+</helmet>
+
+<div style="width:390px;height:844px;background:oklch(0.97 0.012 75);font-family:'Manrope',sans-serif;color:oklch(0.22 0.02 75);display:flex;flex-direction:column;overflow:hidden;position:relative;">
+
+  <div style="height:50px;flex-shrink:0;"></div>
+
+  <sc-if value="{{isAssistant}}" hint-placeholder-val="{{true}}">
+    <div style="padding:0 22px 18px 22px;flex-shrink:0;">
+      <div style="font-family:'Source Serif 4',serif;font-weight:700;font-size:28px;line-height:1.1;letter-spacing:-0.01em;">Assistant</div>
+      <div style="font-size:14px;color:oklch(0.5 0.02 75);margin-top:5px;">Your meetup organizer</div>
+    </div>
+  </sc-if>
+  <sc-if value="{{isCalendar}}" hint-placeholder-val="{{false}}">
+    <div style="padding:0 22px 18px 22px;flex-shrink:0;">
+      <div style="font-family:'Source Serif 4',serif;font-weight:700;font-size:28px;line-height:1.1;letter-spacing:-0.01em;">Calendar</div>
+      <div style="font-size:14px;color:oklch(0.5 0.02 75);margin-top:5px;">Your upcoming meetups</div>
+    </div>
+  </sc-if>
+  <sc-if value="{{isCreate}}" hint-placeholder-val="{{false}}">
+    <div style="padding:0 22px 18px 22px;flex-shrink:0;">
+      <div style="font-family:'Source Serif 4',serif;font-weight:700;font-size:28px;line-height:1.1;letter-spacing:-0.01em;">New meetup</div>
+      <div style="font-size:14px;color:oklch(0.5 0.02 75);margin-top:5px;">Plan something with your friends</div>
+    </div>
+  </sc-if>
+  <sc-if value="{{isFriends}}" hint-placeholder-val="{{false}}">
+    <div style="padding:0 22px 18px 22px;flex-shrink:0;">
+      <div style="font-family:'Source Serif 4',serif;font-weight:700;font-size:28px;line-height:1.1;letter-spacing:-0.01em;">Friends</div>
+      <div style="font-size:14px;color:oklch(0.5 0.02 75);margin-top:5px;">Manage your circle</div>
+    </div>
+  </sc-if>
+  <sc-if value="{{isProfile}}" hint-placeholder-val="{{false}}">
+    <div style="padding:0 22px 18px 22px;flex-shrink:0;display:flex;align-items:center;gap:14px;">
+      <div style="width:56px;height:56px;border-radius:50%;background:oklch(0.6 0.135 40);display:flex;align-items:center;justify-content:center;color:white;font-family:'Source Serif 4',serif;font-weight:700;font-size:19px;flex-shrink:0;">RV</div>
+      <div>
+        <div style="font-family:'Source Serif 4',serif;font-weight:700;font-size:19px;line-height:1.2;">Ricardo Villacis</div>
+        <div style="font-size:13px;color:oklch(0.5 0.02 75);margin-top:2px;">villacis.ricardo@hotmail.com</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="flex:1;overflow-y:auto;">
+
+    <sc-if value="{{isAssistant}}" hint-placeholder-val="{{true}}">
+      <div style="display:flex;flex-direction:column;gap:14px;padding:0 22px 20px 22px;">
+
+        <div style="align-self:flex-end;max-width:80%;background:oklch(0.6 0.135 40);color:white;padding:13px 17px;border-radius:20px 20px 5px 20px;font-size:15px;line-height:1.45;">
+          I want to organize a board games night this weekend
+        </div>
+
+        <div style="align-self:flex-start;max-width:85%;display:flex;flex-direction:column;gap:8px;">
+          <div style="background:white;border:1px solid oklch(0.91 0.01 75);padding:13px 17px;border-radius:20px 20px 20px 5px;font-size:15px;line-height:1.5;">
+            Checking your friends' opinions on board games&hellip; Maria and Tom&aacute;s both said they love it. Want me to invite them?
+          </div>
+          <div style="display:flex;gap:6px;padding-left:4px;">
+            <span style="background:oklch(0.93 0.045 120);color:oklch(0.34 0.075 120);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;">Maria &middot; likes it</span>
+          </div>
+          <div style="display:flex;gap:6px;padding-left:4px;">
+            <span style="background:oklch(0.93 0.045 120);color:oklch(0.34 0.075 120);font-size:12px;font-weight:600;padding:5px 11px;border-radius:100px;">Tom&aacute;s &middot; loves it</span>
+          </div>
+        </div>
+
+        <div style="align-self:flex-end;max-width:80%;background:oklch(0.6 0.135 40);color:white;padding:13px 17px;border-radius:20px 20px 5px 20px;font-size:15px;line-height:1.45;">
+          Yes, invite both
+        </div>
+
+        <div style="align-self:flex-start;max-width:85%;background:white;border:1px solid oklch(0.91 0.01 75);padding:13px 17px;border-radius:20px 20px 20px 5px;font-size:15px;line-height:1.5;">
+          Done &mdash; Saturday 6pm is set. Want me to email them a calendar invite too?
+        </div>
+
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isCalendar}}" hint-placeholder-val="{{false}}">
+      <div style="padding:2px 22px 24px 22px;display:flex;flex-direction:column;gap:20px;">
+
+        <div style="display:flex;gap:7px;">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 0;border-radius:12px;border:1px solid oklch(0.91 0.01 75);"><span style="font-size:10px;color:oklch(0.55 0.02 75);font-weight:600;">MON</span><span style="font-size:14px;font-weight:700;">18</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 0;border-radius:12px;border:1px solid oklch(0.91 0.01 75);"><span style="font-size:10px;color:oklch(0.55 0.02 75);font-weight:600;">TUE</span><span style="font-size:14px;font-weight:700;">19</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 0;border-radius:12px;border:1px solid oklch(0.91 0.01 75);"><span style="font-size:10px;color:oklch(0.55 0.02 75);font-weight:600;">WED</span><span style="font-size:14px;font-weight:700;">20</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 0;border-radius:12px;border:1px solid oklch(0.91 0.01 75);"><span style="font-size:10px;color:oklch(0.55 0.02 75);font-weight:600;">THU</span><span style="font-size:14px;font-weight:700;">21</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 0;border-radius:12px;background:oklch(0.6 0.135 40);"><span style="font-size:10px;color:white;font-weight:600;">FRI</span><span style="font-size:14px;font-weight:700;color:white;">22</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 0;border-radius:12px;border:1px solid oklch(0.91 0.01 75);"><span style="font-size:10px;color:oklch(0.55 0.02 75);font-weight:600;">SAT</span><span style="font-size:14px;font-weight:700;">23</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 0;border-radius:12px;border:1px solid oklch(0.91 0.01 75);"><span style="font-size:10px;color:oklch(0.55 0.02 75);font-weight:600;">SUN</span><span style="font-size:14px;font-weight:700;">24</span></div>
+        </div>
+
+        <div>
+          <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;color:oklch(0.5 0.02 75);text-transform:uppercase;">Upcoming</div>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:10px;">
+            <div style="background:white;border:1px solid oklch(0.91 0.01 75);border-radius:16px;padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div>
+                  <div style="font-weight:700;font-size:16px;">Movie Lovers</div>
+                  <div style="font-size:13px;color:oklch(0.5 0.02 75);margin-top:3px;">Friday, Aug 22 &middot; 1:30 PM</div>
+                </div>
+                <span style="background:oklch(0.93 0.045 120);color:oklch(0.34 0.075 120);font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;flex-shrink:0;">Confirmed</span>
+              </div>
+              <div style="display:flex;margin-top:14px;">
+                <div style="width:30px;height:30px;border-radius:50%;background:oklch(0.6 0.135 40);border:2px solid white;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;">R</div>
+                <div style="width:30px;height:30px;border-radius:50%;background:oklch(0.62 0.135 120);border:2px solid white;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;margin-left:-8px;">F</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isCreate}}" hint-placeholder-val="{{false}}">
+      <div style="padding:2px 22px 24px 22px;display:flex;flex-direction:column;gap:22px;">
+
+        <div>
+          <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;color:oklch(0.5 0.02 75);text-transform:uppercase;">Activity</div>
+          <div style="margin-top:10px;background:white;border:1px solid oklch(0.91 0.01 75);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-weight:600;font-size:15px;">Board Games Night</span>
+            <span style="font-size:13px;color:oklch(0.6 0.135 40);font-weight:700;">Change</span>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;color:oklch(0.5 0.02 75);text-transform:uppercase;">Friends interested</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px;">
+
+            <div onClick="{{toggleMaria}}" style="cursor:pointer;background:white;border:1px solid oklch(0.91 0.01 75);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:oklch(0.93 0.045 120);color:oklch(0.34 0.075 120);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">M</div>
+              <div style="flex:1;">
+                <div style="font-weight:600;font-size:14px;">Maria Lopez</div>
+                <div style="font-size:12px;color:oklch(0.5 0.02 75);margin-top:1px;">Loves board games</div>
+              </div>
+              <div style="width:24px;height:24px;border-radius:50%;border:2px solid oklch(0.6 0.135 40);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:{{mariaCircleBg}};">
+                <sc-if value="{{mariaSelected}}" hint-placeholder-val="{{true}}">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </sc-if>
+              </div>
+            </div>
+
+            <div onClick="{{toggleTomas}}" style="cursor:pointer;background:white;border:1px solid oklch(0.91 0.01 75);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:oklch(0.93 0.045 120);color:oklch(0.34 0.075 120);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">T</div>
+              <div style="flex:1;">
+                <div style="font-weight:600;font-size:14px;">Tom&aacute;s Fern&aacute;ndez</div>
+                <div style="font-size:12px;color:oklch(0.5 0.02 75);margin-top:1px;">Strongly likes board games</div>
+              </div>
+              <div style="width:24px;height:24px;border-radius:50%;border:2px solid oklch(0.6 0.135 40);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:{{tomasCircleBg}};">
+                <sc-if value="{{tomasSelected}}" hint-placeholder-val="{{true}}">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </sc-if>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;color:oklch(0.5 0.02 75);text-transform:uppercase;">When</div>
+          <div style="display:flex;gap:10px;margin-top:10px;">
+            <div style="flex:1;background:white;border:1px solid oklch(0.91 0.01 75);border-radius:14px;padding:13px 16px;font-size:14px;font-weight:600;">Fri, Aug 22</div>
+            <div style="flex:1;background:white;border:1px solid oklch(0.91 0.01 75);border-radius:14px;padding:13px 16px;font-size:14px;font-weight:600;">6:00 PM</div>
+          </div>
+        </div>
+
+        <sc-if value="{{!meetupCreated}}" hint-placeholder-val="{{true}}">
+          <div onClick="{{createMeetup}}" style="cursor:pointer;background:oklch(0.6 0.135 40);color:white;text-align:center;padding:15px;border-radius:14px;font-weight:700;font-size:15px;">Create meetup</div>
+        </sc-if>
+        <sc-if value="{{meetupCreated}}" hint-placeholder-val="{{false}}">
+          <div style="background:oklch(0.93 0.045 120);color:oklch(0.3 0.075 120);text-align:center;padding:15px;border-radius:14px;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.3 0.075 120)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Meetup created
+          </div>
+        </sc-if>
+
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isFriends}}" hint-placeholder-val="{{false}}">
+      <div style="padding:2px 22px 24px 22px;display:flex;flex-direction:column;gap:22px;">
+
+        <div style="background:white;border:1px solid oklch(0.91 0.01 75);border-radius:24px;padding:11px 18px;display:flex;align-items:center;gap:10px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.02 75)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span style="font-size:14px;color:oklch(0.55 0.02 75);">Search by name or email</span>
+        </div>
+
+        <sc-if value="{{!requestAccepted}}" hint-placeholder-val="{{true}}">
+          <div>
+            <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;color:oklch(0.5 0.02 75);text-transform:uppercase;">Requests</div>
+            <div style="margin-top:10px;background:white;border:1px solid oklch(0.91 0.01 75);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:oklch(0.93 0.02 40);color:oklch(0.5 0.1 40);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">S</div>
+              <div style="flex:1;">
+                <div style="font-weight:600;font-size:14px;">Sofia Ramirez</div>
+                <div style="font-size:12px;color:oklch(0.5 0.02 75);margin-top:1px;">wants to be friends</div>
+              </div>
+              <div onClick="{{acceptRequest}}" style="cursor:pointer;background:oklch(0.6 0.135 40);color:white;font-size:13px;font-weight:700;padding:8px 15px;border-radius:100px;flex-shrink:0;">Accept</div>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{requestAccepted}}" hint-placeholder-val="{{false}}">
+          <div style="background:oklch(0.93 0.045 120);border-radius:14px;padding:14px;font-size:13px;color:oklch(0.3 0.075 120);font-weight:600;">You and Sofia are now friends</div>
+        </sc-if>
+
+        <div>
+          <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;color:oklch(0.5 0.02 75);text-transform:uppercase;">Your friends &middot; 2</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px;">
+            <div style="background:white;border:1px solid oklch(0.91 0.01 75);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:oklch(0.93 0.045 120);color:oklch(0.34 0.075 120);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">M</div>
+              <div style="flex:1;">
+                <div style="font-weight:600;font-size:14px;">Maria Lopez</div>
+                <div style="font-size:12px;color:oklch(0.5 0.02 75);margin-top:1px;">Interested in 3 activities</div>
+              </div>
+            </div>
+            <div style="background:white;border:1px solid oklch(0.91 0.01 75);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:oklch(0.93 0.045 120);color:oklch(0.34 0.075 120);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">T</div>
+              <div style="flex:1;">
+                <div style="font-weight:600;font-size:14px;">Tom&aacute;s Fern&aacute;ndez</div>
+                <div style="font-size:12px;color:oklch(0.5 0.02 75);margin-top:1px;">Interested in 2 activities</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isProfile}}" hint-placeholder-val="{{false}}">
+      <div style="padding:2px 22px 24px 22px;display:flex;flex-direction:column;gap:22px;">
+
+        <div>
+          <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;color:oklch(0.5 0.02 75);text-transform:uppercase;">Your opinions</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px;">
+            <div style="background:white;border:1px solid oklch(0.91 0.01 75);border-radius:14px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-weight:600;font-size:14px;">Watching Movies</span>
+              <span style="background:oklch(0.93 0.045 120);color:oklch(0.34 0.075 120);font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;">Like</span>
+            </div>
+            <div style="background:white;border:1px solid oklch(0.91 0.01 75);border-radius:14px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-weight:600;font-size:14px;">Reading Books</span>
+              <span style="background:oklch(0.93 0.025 40);color:oklch(0.45 0.07 40);font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;">Strongly dislike</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;color:oklch(0.5 0.02 75);text-transform:uppercase;">Activities</div>
+          <div style="margin-top:10px;background:white;border:1px solid oklch(0.91 0.01 75);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:10px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.02 75)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span style="font-size:14px;color:oklch(0.55 0.02 75);">Search or create an activity</span>
+          </div>
+        </div>
+
+        <div style="border-top:1px solid oklch(0.91 0.01 75);padding-top:16px;">
+          <div style="font-size:14px;font-weight:700;color:oklch(0.6 0.135 40);">Sign out</div>
+        </div>
+
+      </div>
+    </sc-if>
+
+  </div>
+
+  <sc-if value="{{isAssistant}}" hint-placeholder-val="{{true}}">
+    <div style="flex-shrink:0;padding:12px 16px;display:flex;gap:10px;align-items:center;border-top:1px solid oklch(0.93 0.01 75);background:oklch(0.97 0.012 75);">
+      <div style="flex:1;background:white;border:1px solid oklch(0.88 0.01 75);border-radius:24px;padding:12px 18px;font-size:14px;color:oklch(0.55 0.02 75);">
+        Message your organizer&hellip;
+      </div>
+      <div style="width:42px;height:42px;border-radius:50%;background:oklch(0.6 0.135 40);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="flex-shrink:0;height:82px;border-top:1px solid oklch(0.91 0.01 75);background:white;display:flex;align-items:flex-start;justify-content:space-around;padding-top:11px;">
+
+    <div onClick="{{goAssistant}}" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;width:52px;">
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="{{assistantColor}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <span style="font-size:11px;font-weight:{{assistantWeight}};color:{{assistantColor}};">Assistant</span>
+    </div>
+
+    <div onClick="{{goCalendar}}" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;width:52px;">
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="{{calendarColor}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span style="font-size:11px;font-weight:{{calendarWeight}};color:{{calendarColor}};">Calendar</span>
+    </div>
+
+    <div onClick="{{goCreate}}" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;width:52px;margin-top:-22px;">
+      <div style="width:50px;height:50px;border-radius:50%;background:oklch(0.6 0.135 40);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px oklch(0.6 0.135 40 / 35%);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+    </div>
+
+    <div onClick="{{goFriends}}" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;width:52px;">
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="{{friendsColor}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span style="font-size:11px;font-weight:{{friendsWeight}};color:{{friendsColor}};">Friends</span>
+    </div>
+
+    <div onClick="{{goProfile}}" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;width:52px;">
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="{{profileColor}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span style="font-size:11px;font-weight:{{profileWeight}};color:{{profileColor}};">You</span>
+    </div>
+
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const activeTab = this.state.activeTab || 'assistant';
+    const selectedFriends = this.state.selectedFriends || { maria: true, tomas: true };
+    const requestAccepted = !!this.state.requestAccepted;
+    const meetupCreated = !!this.state.meetupCreated;
+
+    const goTo = (tab) => () => this.setState({ activeTab: tab });
+    const toggleFriend = (key) => () =>
+      this.setState({ selectedFriends: { ...selectedFriends, [key]: !selectedFriends[key] } });
+
+    const accent = 'oklch(0.6 0.135 40)';
+    const muted = 'oklch(0.6 0.02 75)';
+    const tint = 'oklch(0.93 0.03 40)';
+
+    const tabColor = (tab) => (activeTab === tab ? accent : muted);
+    const tabWeight = (tab) => (activeTab === tab ? '700' : '500');
+
+    return {
+      isAssistant: activeTab === 'assistant',
+      isCalendar: activeTab === 'calendar',
+      isCreate: activeTab === 'create',
+      isFriends: activeTab === 'friends',
+      isProfile: activeTab === 'profile',
+
+      goAssistant: goTo('assistant'),
+      goCalendar: goTo('calendar'),
+      goCreate: goTo('create'),
+      goFriends: goTo('friends'),
+      goProfile: goTo('profile'),
+
+      assistantColor: tabColor('assistant'),
+      assistantWeight: tabWeight('assistant'),
+      calendarColor: tabColor('calendar'),
+      calendarWeight: tabWeight('calendar'),
+      friendsColor: tabColor('friends'),
+      friendsWeight: tabWeight('friends'),
+      profileColor: tabColor('profile'),
+      profileWeight: tabWeight('profile'),
+
+      mariaSelected: !!selectedFriends.maria,
+      tomasSelected: !!selectedFriends.tomas,
+      mariaCircleBg: selectedFriends.maria ? accent : 'transparent',
+      tomasCircleBg: selectedFriends.tomas ? accent : 'transparent',
+      toggleMaria: toggleFriend('maria'),
+      toggleTomas: toggleFriend('tomas'),
+
+      requestAccepted,
+      acceptRequest: () => this.setState({ requestAccepted: true }),
+
+      meetupCreated,
+      createMeetup: () => this.setState({ meetupCreated: true }),
+    };
+  }
+}
+</script>
+</body>
+</html>

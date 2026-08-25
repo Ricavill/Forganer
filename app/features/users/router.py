@@ -34,3 +34,9 @@ def search_users(
     db: Session = Depends(get_db),
 ):
     return service.search_users(db, q, exclude_user_id=current_user.id)
+
+
+@router.get("/by-ids", response_model=list[UserOut], dependencies=[Depends(get_current_user)])
+def get_users_by_ids(ids: str, db: Session = Depends(get_db)):
+    id_list = [int(part) for part in ids.split(",") if part.strip()]
+    return service.get_users_by_ids(db, id_list)

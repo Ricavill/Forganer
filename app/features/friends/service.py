@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.core.exceptions import ConflictError, NotFoundError, ValidationError
 from app.features.friends.models import FriendInvitation, InvitationStatus, UserFriends, UserFriendsMember
 from app.features.friends.schemas import FriendInvitationOut, FriendOut, InterestedFriendOut
-from app.features.opinions.service import list_positive_opinions_for_users
+from app.features.opinions.service import list_opinions_for_users, list_positive_opinions_for_users
 from app.features.users.models import User
 from app.features.users.service import get_users_by_ids
 
@@ -173,6 +173,25 @@ def list_interested_friends(db: Session, user_id: int, activity_id: int) -> list
     """Friends of `user_id` with a positive (LIKE or STRONGLY_LIKE) opinion about `activity_id`."""
     friend_ids = get_friend_user_ids(db, user_id)
     opinions = list_positive_opinions_for_users(db, friend_ids, activity_id)
+    if not opinions:
+        return []
+
+    friends_by_id = {u.id: u for u in get_users_by_ids(db, [o.user_id for o in opinions])}
+    return [
+        InterestedFriendOut(
+            user_id=opinion.user_id,
+            name=friends_by_id[opinion.user_id].name,
+            last_name=friends_by_id[opinion.user_id].last_name,
+            sentiment=opinion.sentiment,
+        )
+        for opinion in opinions
+    ]
+
+
+def list_friend_opinions(db: Session, user_id: int, activity_id: int) -> list[InterestedFriendOut]:
+    """Friends of `user_id` with any recorded opinion (positive or negative) about `activity_id`."""
+    friend_ids = get_friend_user_ids(db, user_id)
+    opinions = list_opinions_for_users(db, friend_ids, activity_id)
     if not opinions:
         return []
 

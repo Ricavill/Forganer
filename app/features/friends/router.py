@@ -73,3 +73,12 @@ def list_interested_friends(
     db: Session = Depends(get_db),
 ):
     return service.list_interested_friends(db, current_user.id, activity_id)
+
+
+@router.get("/opinions", response_model=list[InterestedFriendOut])
+def list_friend_opinions(
+    activity_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return service.list_friend_opinions(db, current_user.id, activity_id)

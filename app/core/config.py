@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     resend_api_key: str = ""
     resend_from_email: str = "Friends Activity Planner <onboarding@resend.dev>"
 
+    cors_allow_origins: list[str] = ["http://localhost:5173"]
+
     model_config = {"env_file": ".env"}
 
 

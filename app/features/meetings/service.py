@@ -58,8 +58,13 @@ def create_meet(db: Session, payload: MeetCreate) -> Meet:
     return meet
 
 
-def list_meets(db: Session) -> list[Meet]:
-    result = db.execute(select(Meet).where(Meet.deleted_at.is_(None)))
+def list_meets(db: Session, user_id: int) -> list[Meet]:
+    group_ids = groups_service.list_group_ids_for_user(db, user_id)
+    if not group_ids:
+        return []
+    result = db.execute(
+        select(Meet).where(Meet.deleted_at.is_(None), Meet.meet_group_id.in_(group_ids))
+    )
     return list(result.scalars().all())
 
 

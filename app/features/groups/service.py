@@ -9,16 +9,32 @@ from app.features.groups.schemas import MeetGroupCreate
 INVALID_USER_DETAIL = "Invalid user_id"
 
 
-def create_group(db: Session, payload: MeetGroupCreate) -> MeetGroup:
+def create_group(db: Session, payload: MeetGroupCreate, creator_user_id: int) -> MeetGroup:
     group = MeetGroup(name=payload.name)
     db.add(group)
+    db.flush()
+    db.add(MeetGroupUser(meet_group_id=group.id, user_id=creator_user_id))
     db.commit()
     db.refresh(group)
     return group
 
 
-def list_groups(db: Session) -> list[MeetGroup]:
-    result = db.execute(select(MeetGroup).where(MeetGroup.deleted_at.is_(None)))
+def list_group_ids_for_user(db: Session, user_id: int) -> list[int]:
+    result = db.execute(
+        select(MeetGroupUser.meet_group_id).where(
+            MeetGroupUser.user_id == user_id, MeetGroupUser.deleted_at.is_(None)
+        )
+    )
+    return [row[0] for row in result.all()]
+
+
+def list_groups_for_user(db: Session, user_id: int) -> list[MeetGroup]:
+    group_ids = list_group_ids_for_user(db, user_id)
+    if not group_ids:
+        return []
+    result = db.execute(
+        select(MeetGroup).where(MeetGroup.deleted_at.is_(None), MeetGroup.id.in_(group_ids))
+    )
     return list(result.scalars().all())
 
 
